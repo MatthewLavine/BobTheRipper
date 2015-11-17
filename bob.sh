@@ -24,7 +24,7 @@ wordlist=(${wordlist_file// / })
 total_words=${#wordlist[@]}
 file=$1
 running_workers=0
-num_workers=8
+num_workers=$(python -c 'import multiprocessing as mp; print(mp.cpu_count())')
 password_found=0
 
 trap "exit" INT TERM
@@ -48,7 +48,7 @@ function worker_thread {
     word=${wordlist[$i]}
     word=$(tr -dc '[[:print:]]' <<< "$word")
 
-    if [ $(($i%50)) -eq 0 ]; then
+    if [ $(($i%2)) -eq 0 ]; then
       tput cup $(($running_workers+1)) 0 && echo "Worker $running_workers has processed $(($i-$start))/$(($end-$start)) words"
     fi
     gpg --passphrase $word --decrypt $file &> /dev/null && tput cup $(($num_workers+2)) 0 && echo "Password found by worker $running_workers: $word" && kill 0
