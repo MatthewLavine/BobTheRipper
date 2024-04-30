@@ -51,7 +51,7 @@ function worker_thread {
     if [ $(($i%2)) -eq 0 ]; then
       tput cup $(($running_workers+1)) 0 && echo "Worker $running_workers has processed $(($i-$start))/$(($end-$start)) words"
     fi
-    gpg --passphrase $word --decrypt $file &> /dev/null && tput cup $(($num_workers+4)) 0 && echo "Password found by worker $running_workers: $word" && kill 0
+    gpg --batch --passphrase "$word" --decrypt $file &> /dev/null && tput cup $(($num_workers+4)) 0 && echo "Password found by worker $running_workers: $word" && kill 0
   done
 }
 
